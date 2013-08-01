@@ -18,8 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import pt.ist.bennu.core.applicationTier.Authenticate;
-import pt.ist.bennu.core.domain.User;
+import pt.ist.bennu.core.security.Authenticate;
 
 public class JerseyAuthenticationFilter implements Filter {
     private static final Logger LOG = LoggerFactory.getLogger(JerseyAuthenticationFilter.class);
@@ -42,12 +41,13 @@ public class JerseyAuthenticationFilter implements Filter {
         if (checkAccessControl(request)) {
             try {
                 if (!StringUtils.isEmpty(userToLogin)) {
-                    Authenticate.authenticate(User.findByUsername(userToLogin));
+//                    Authenticate.authenticate(User.findByUsername(userToLogin));
+                    Authenticate.login(request.getSession(), userToLogin, StringUtils.EMPTY, false);
                 }
                 filterChain.doFilter(request, response);
             } finally {
                 if (!StringUtils.isEmpty(userToLogin)) {
-                    pt.ist.fenixWebFramework.security.UserView.setUser(null);
+                    Authenticate.logout(request.getSession());
                 }
             }
         } else {

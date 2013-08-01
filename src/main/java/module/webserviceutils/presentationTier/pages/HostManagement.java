@@ -10,11 +10,11 @@ import module.webserviceutils.presentationTier.components.DefaultFieldFactory;
 
 import org.apache.commons.lang.StringUtils;
 
-import pt.ist.bennu.core.applicationTier.Authenticate.UserView;
 import pt.ist.bennu.core.domain.MyOrg;
-import pt.ist.bennu.core.domain.RoleType;
 import pt.ist.bennu.core.domain.User;
-import pt.ist.bennu.core.util.BundleUtil;
+import pt.ist.bennu.core.domain.groups.Group;
+import pt.ist.bennu.core.i18n.BundleUtil;
+import pt.ist.bennu.core.security.Authenticate;
 import pt.ist.vaadinframework.data.reflect.DomainContainer;
 import pt.ist.vaadinframework.data.reflect.DomainItem;
 import pt.ist.vaadinframework.ui.EmbeddedComponentContainer;
@@ -86,7 +86,7 @@ public abstract class HostManagement<T extends Host> extends CustomComponent imp
     }
 
     private Component createHeaderTitle() {
-        final String title = BundleUtil.getStringFromResourceBundle(BUNDLE_NAME, "title." + hostClass.getSimpleName());
+        final String title = BundleUtil.getString(BUNDLE_NAME, "title." + hostClass.getSimpleName());
         final Label lblTitle = new Label(title);
         lblTitle.addStyleName(BennuTheme.LABEL_H2);
         return lblTitle;
@@ -201,8 +201,8 @@ public abstract class HostManagement<T extends Host> extends CustomComponent imp
 
     @Override
     public boolean isAllowedToOpen(final Map<String, String> parameters) {
-        final User user = UserView.getCurrentUser();
-        return user != null && user.hasRoleType(RoleType.MANAGER);
+        final User user = Authenticate.getUser();
+        return user != null && Group.parse("#managers").isMember(user);
     }
 
 }
